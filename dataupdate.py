@@ -76,7 +76,7 @@ def netcheck():
                 channel = each.split('Frequency:')[1].split(' Access Point:')[0].strip()
                 if channel[0] == "5":
                     band = "A"
-                elif channel[1] == "2":
+                elif channel[0] == "2":
                     band = "B"
                 else:
                     band = ""
