@@ -74,7 +74,7 @@ def set_fan(status):
         if status:
             fst = "ON"
         else:
-            fst = "OFF"
+            fst = "ON"
         fan_file = open("/dev/shm/fan", 'w')
         fan_file.write(fst)
     enabled = status
