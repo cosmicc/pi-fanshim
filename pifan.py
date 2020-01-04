@@ -51,7 +51,8 @@ def get_cpu_temp():
     for x in ['cpu-thermal', 'cpu_thermal']:
         if x in t:
             temp_file = open("/dev/shm/cputemp", 'w')
-            temp_file.write(str(t[x][0].current))
+            pft = t[x][0].current // 0.1 / 10
+            temp_file.write(str(pft))
             return t[x][0].current
     print("Warning: Unable to get CPU temperature!")
     return 0
@@ -70,8 +71,12 @@ def set_fan(status):
     if status != enabled:
         changed = True
         fanshim.set_fan(status)
+        if status:
+            fst = "ON"
+        else:
+            fst = "OFF"
         fan_file = open("/dev/shm/fan", 'w')
-        fan_file.write(str(status))
+        fan_file.write(fst)
     enabled = status
     return changed
 
