@@ -35,8 +35,8 @@ def clean_exit(signum, frame):
 def update_led_temperature(temp):
     led_busy.acquire()
     temp = float(temp)
-    temp -= args.off_threshold
-    temp /= float(args.on_threshold - args.off_threshold)
+    temp -= 40
+    temp /= float(70 - 40)
     temp = max(0, min(1, temp))
     temp = 1.0 - temp
     temp *= 120.0
