@@ -51,7 +51,7 @@ def get_cpu_temp():
     for x in ['cpu-thermal', 'cpu_thermal']:
         if x in t:
             temp_file = open("/dev/shm/cputemp", 'w')
-            temp_file.write(t[x][0].current)
+            temp_file.write(str(t[x][0].current))
             return t[x][0].current
     print("Warning: Unable to get CPU temperature!")
     return 0
@@ -60,7 +60,7 @@ def get_cpu_temp():
 def get_cpu_freq():
     freq = psutil.cpu_freq()
     freq_file = open("/dev/shm/cpufreq", 'w')
-    freq_file.write(freq)
+    freq_file.write(str(freq))
     return freq
 
 
@@ -71,7 +71,7 @@ def set_fan(status):
         changed = True
         fanshim.set_fan(status)
         fan_file = open("/dev/shm/fan", 'w')
-        fan_file.write(status)
+        fan_file.write(str(status))
     enabled = status
     return changed
 
