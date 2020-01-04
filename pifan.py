@@ -61,7 +61,7 @@ def get_cpu_temp():
 def get_cpu_freq():
     freq = psutil.cpu_freq()
     freq_file = open("/dev/shm/cpufreq", 'w')
-    freq_file.write(str(freq.current))
+    freq_file.write(str(int(freq.current)))
     return freq
 
 
