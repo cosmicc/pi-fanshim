@@ -21,7 +21,7 @@ while True:
         ntz = tz.tzNameAt(lat, lon)
         fan_file.write(f'lat={lat}\nlon={lon}\nmaiden={mhead}\ntimezone={ntz}\n')
         tz_file = open("/etc/timezone", 'r')
-        ctz = tz_file.read()
+        ctz = tz_file.read().strip('\n')
         if ctz != ntz:
             print(f'Timezone changed from {ctz} to {ntz}')
             subprocess.run(['timedatectl', 'set-timezone', ntz])
