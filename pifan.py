@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-from fanshim import FanShim
-from threading import Lock
-import colorsys
-import psutil
 import argparse
-import time
+import colorsys
 import signal
 import sys
+import time
+from threading import Lock
 
+import psutil
+from fanshim import FanShim
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--threshold', type=float, default=-1, help='Temperature threshold in degrees C to enable fan')
@@ -70,7 +70,7 @@ def set_fan(status):
     changed = False
     if status != enabled:
         changed = True
-        fanshim.set_fan(status)
+        #fanshim.set_fan(status)
         if status:
             fst = "ON"
         else:
@@ -91,7 +91,7 @@ Use --on-threshold and --off-threshold instead!
 
 fanshim = FanShim()
 fanshim.set_hold_time(1.0)
-fanshim.set_fan(False)
+fanshim.set_fan(True)
 armed = True
 enabled = False
 led_busy = Lock()
@@ -106,31 +106,6 @@ t = get_cpu_temp()
 if t >= args.threshold:
     last_change = get_cpu_temp()
     set_fan(True)
-
-
-if not args.nobutton:
-    @fanshim.on_release()
-    def release_handler(was_held):
-        global armed
-        if was_held:
-            pass
-            # set_automatic(not armed)
-        elif not armed:
-            set_fan(not enabled)
-
-    @fanshim.on_hold()
-    def held_handler():
-        global led_busy
-        if args.noled:
-            return
-        led_busy.acquire()
-        for _ in range(3):
-            fanshim.set_light(0, 0, 255)
-            time.sleep(0.04)
-            fanshim.set_light(0, 0, 0)
-            time.sleep(0.04)
-        led_busy.release()
-
 
 try:
     while True:
