@@ -22,7 +22,6 @@ BAD="${RED}YES${NC}"
 #Get Status, extract hex
 STATUS=$(vcgencmd get_throttled)
 STATUS=${STATUS#*=}
-echo ${STATUS}
 echo -n "Status: "
 (($STATUS!=0)) && echo "${RED}${STATUS}${NC}" || echo "${GREEN}${STATUS}${NC}"
 
