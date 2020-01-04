@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import subprocess
 from time import sleep
+
 import gps
 import maidenhead as mh
 from tzwhere import tzwhere
@@ -16,5 +18,11 @@ while True:
         mhead = mh.toMaiden(lat, lon, precision=4)
         # print(f'lat: {lat}, lon: {lon}, maiden: {mhead}, {tz.tzNameAt(lat, lon)}')
         fan_file = open("/dev/shm/gps", 'w')
-        fan_file.write(f'lat={lat}\nlon={lon}\nmaiden={mhead}\ntimezone={tz.tzNameAt(lat, lon)}\n')
+        ntz = tz.tzNameAt(lat, lon)
+        fan_file.write(f'lat={lat}\nlon={lon}\nmaiden={mhead}\ntimezone={ntz}\n')
+        tz_file = open("/etc/timezone", 'r')
+        ctz = tz.read()
+        if ctz != ntz:
+            print(f'Timezone changed from {ctz} to {ntz}')
+            subprocess.run(['timedatectl', 'set-timezone', ntz])
         sleep(30)
