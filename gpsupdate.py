@@ -10,6 +10,13 @@ from tzwhere import tzwhere
 gpsd = gps.gps(mode=gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
 tz = tzwhere.tzwhere()
 
+
+def trunc(f_number, n_decimals):
+    strFormNum = "{0:." + str(n_decimals + 5) + "f}"
+    trunc_num = float(strFormNum.format(f_number)[:-5])
+    return(trunc_num)
+
+
 while True:
     report = gpsd.next()
     if report['class'] == 'TPV':
@@ -18,8 +25,8 @@ while True:
         mhead = mh.toMaiden(lat, lon, precision=4)
         # print(f'lat: {lat}, lon: {lon}, maiden: {mhead}, {tz.tzNameAt(lat, lon)}')
         fan_file = open("/dev/shm/gps", 'w')
-        ntz = tz.tzNameAt(float("%4.f" % lat), float("%3.f" % lon))
-        fan_file.write(f'lat={lat}\nlon={lon}\nmaiden={mhead}\ntimezone={ntz}\n')
+        ntz = tz.tzNameAt(lat, lon)
+        fan_file.write(f'lat={trunc(lat, 4)}\nlon={trunc(lon, 4)}\nmaiden={mhead}\ntimezone={ntz}\n')
         tz_file = open("/etc/timezone", 'r')
         ctz = tz_file.read().strip('\n')
         if ctz != ntz:
