@@ -26,7 +26,7 @@ while True:
         # print(f'lat: {lat}, lon: {lon}, maiden: {mhead}, {tz.tzNameAt(lat, lon)}')
         fan_file = open("/dev/shm/gps", 'w')
         ntz = tz.tzNameAt(lat, lon)
-        fan_file.write(f'lat={trunc(lat, 4)}\nlon={trunc(lon, 4)}\nmaiden={mhead}\ntimezone={ntz}\n')
+        fan_file.write(f'lat={trunc(lat, 6)}\nlon={trunc(lon, 6)}\nmaiden={mhead}\ntimezone={ntz}\n')
         tz_file = open("/etc/timezone", 'r')
         ctz = tz_file.read().strip('\n')
         if ctz != ntz:
