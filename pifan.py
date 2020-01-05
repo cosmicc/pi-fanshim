@@ -70,15 +70,19 @@ def set_fan(status):
     changed = False
     if status != enabled:
         changed = True
-        #fanshim.set_fan(status)
-        if status:
-            fst = "ON"
-        else:
-            fst = "ON"
-        fan_file = open("/dev/shm/fan", 'w')
-        fan_file.write(fst)
+        # fanshim.set_fan(status)
     enabled = status
     return changed
+
+
+def get_fan():
+    fstat = fanshim.get_fan()
+    if fstat == 1:
+        fst = "ON"
+    else:
+        fst = "OFF"
+    fan_file = open("/dev/shm/fan", 'w')
+    fan_file.write(fst)
 
 
 if args.threshold > -1 or args.hysteresis > -1:
