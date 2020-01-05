@@ -3,11 +3,11 @@
 import subprocess
 from time import sleep
 
-import gps
+import gpsdshm
 import maidenhead as mh
 from tzwhere import tzwhere
 
-gpsd = gps.gps(mode=gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
+gpsd_shm = gpsdshm.Shm()
 tz = tzwhere.tzwhere()
 
 
@@ -18,15 +18,29 @@ def trunc(f_number, n_decimals):
 
 
 while True:
-    report = gpsd.next()
-    if report['class'] == 'TPV':
-        lat = getattr(report, 'lat', 0.0)
-        lon = getattr(report, 'lon', 0.0)
+    try:
+        lat = gpsd_shm.fix.latitude
+    except:
+        lat is None
+    try:
+        lon = gpsd_shm.fix.longitude
+    except:
+        lon is None
+    fmode = gpsd_shm.fix.mode
+    if fmode == 0:
+        fixmode = 'No GPS'
+    if fmode == 1:
+        fixmode = 'No Fix'
+    if fmode == 2:
+        fixmode = '2D Fix'
+    if fmode == 3:
+        fixmode = '3D Fix'
+    if lat is not None and lon is not None:
         mhead = mh.toMaiden(lat, lon, precision=4)
         # print(f'lat: {lat}, lon: {lon}, maiden: {mhead}, {tz.tzNameAt(lat, lon)}')
         fan_file = open("/dev/shm/gps", 'w')
         ntz = tz.tzNameAt(lat, lon)
-        fan_file.write(f'lat={trunc(lat, 6)}\nlon={trunc(lon, 6)}\nmaiden={mhead}\ntimezone={ntz}\n')
+        fan_file.write(f'lat={trunc(lat, 6)}\nlon={trunc(lon, 6)}\nmaiden={mhead}\ntimezone={ntz}\nfix={fixmode}\n')
         tz_file = open("/etc/timezone", 'r')
         ctz = tz_file.read().strip('\n')
         if ctz != ntz:
