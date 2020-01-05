@@ -115,6 +115,7 @@ try:
     while True:
         t = get_cpu_temp()
         f = get_cpu_freq()
+        get_fan()
         was_fast = is_fast
         is_fast = (int(f.current) == int(f.max))
         if armed:
