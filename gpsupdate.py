@@ -16,6 +16,15 @@ def trunc(f_number, n_decimals):
     trunc_num = float(strFormNum.format(f_number)[:-5])
     return(trunc_num)
 
+def get_pps():
+    process = subprocess.run(['ntpq','-p'], check=True, stdout=subprocess.PIPE, universal_newlines=True)
+    output = process.stdout.split('\n')
+    for line in output:
+        if len(line) > 0:
+            if line[0] == "*":
+                a = ' '.join(line.split())
+                return a.split(' ')[1].replace('.', '')
+
 
 while True:
     try:
@@ -40,10 +49,20 @@ while True:
         # print(f'lat: {lat}, lon: {lon}, maiden: {mhead}, {tz.tzNameAt(lat, lon)}')
         fan_file = open("/dev/shm/gps", 'w')
         ntz = tz.tzNameAt(lat, lon)
-        fan_file.write(f'lat={trunc(lat, 6)}\nlon={trunc(lon, 6)}\nmaiden={mhead}\ntimezone={ntz}\nfix={fixmode}\n')
+        fan_file.write(f'lat={trunc(lat, 6)}\nlon={trunc(lon, 6)}\nmaiden={mhead}\ntimezone={ntz}\nfix={fixmode}\npps={get_pps()}\n')
+        fan_file.close()
         tz_file = open("/etc/timezone", 'r')
         ctz = tz_file.read().strip('\n')
+        tz_file.close()
         if ctz != ntz:
             print(f'Timezone changed from {ctz} to {ntz}')
             subprocess.run(['timedatectl', 'set-timezone', ntz])
         sleep(30)
+    else:
+        tz_file = open("/etc/timezone", 'r')
+        ctz = tz_file.read().strip('\n')
+        tz_file.close()
+        fan_file = open("/dev/shm/gps", 'w')
+        fan_file.write(f'lat=0\nlon=0\nmaiden="N/A"\ntimezone={ctz}\nfix={fixmode}\npps={get_pps()}\n')
+        fan_file.close()
+        sleep(10)
