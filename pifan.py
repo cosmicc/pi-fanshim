@@ -54,7 +54,7 @@ def get_cpu_temp():
     temp_file = open("/dev/shm/cputemp", 'w')
     temp_file.write(str(pft))
     temp_file.close()
-    return pft
+    return float(pft)
 
 
 def get_cpu_freq():
