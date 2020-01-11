@@ -206,8 +206,11 @@ def freq_breakdown(freq):
 if __name__ == '__main__':
     if sys.argv[1]:
         bd = freq_breakdown(sys.argv[1])
+        print(' ')
+        print(f'Frequency: {sys.argv[1]}')
         for key, value in bd.items():
-            print(f'{key} - {value}')
+            print(f'{key.upper()}: {value}')
+        print(' ')
     else:
         print('You need to specify a frequency. eg: 123.000.000')
         exit(1)
