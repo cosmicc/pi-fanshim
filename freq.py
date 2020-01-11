@@ -4,8 +4,15 @@ import sys
 
 def freq_breakdown(freq):
     freq = freq.replace('.', '')
-    print(freq)
     freq = int(freq)
+    band_desc = None
+    bandtype = None
+    meters = None
+    itu_abbr = None
+    itu_num = None
+    ieee = None
+    nato = None
+    broadcast = None
     if freq <= 30:
         itu_abbr = 'ELF'
         itu_num = 1
@@ -198,7 +205,9 @@ def freq_breakdown(freq):
 
 if __name__ == '__main__':
     if sys.argv[1]:
-        freq_breakdown(sys.argv[1])
+        bd = freq_breakdown(sys.argv[1])
+        for each in bd:
+            print(each)
     else:
         print('You need to specify a frequency. eg: 123.000.000')
         exit(1)
