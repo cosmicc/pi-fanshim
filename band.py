@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-
-freq = '14.235.000'
-freq = int(freq.replace('.', ''))
+import sys
 
 
-def define_freq(freq):
+def freq_breakdown(freq):
     if freq <= 30:
         itu_abbr = 'ELF'
         itu_num = 1
@@ -195,4 +193,9 @@ def define_freq(freq):
     return {'band_desc': band_desc, 'band_type': bandtype, 'meters': meters, 'itu_abbr': itu_abbr, 'itu_num': itu_num, 'ieee': ieee, 'nato': nato, 'broadcast': broadcast}
 
 
-define_freq(freq)
+if __name__ == '__main__':
+    if sys.argv[0]:
+        freq_breakdown()
+    else:
+        print('You need to specify a frequency. eg: 123.000.000')
+        exit(1)
