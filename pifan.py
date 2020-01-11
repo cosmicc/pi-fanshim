@@ -6,6 +6,7 @@ import sys
 import time
 from threading import Lock
 import subprocess
+import psutil
 
 from fanshim import FanShim
 
