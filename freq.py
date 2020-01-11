@@ -4,6 +4,7 @@ import sys
 
 def freq_breakdown(freq):
     freq = freq.replace('.', '')
+    freq = freq.replace(',', '')
     freq = int(freq)
     band_desc = None
     bandtype = None
