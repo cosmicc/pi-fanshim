@@ -5,8 +5,8 @@ import signal
 import sys
 import time
 from threading import Lock
+import subprocess
 
-import psutil
 from fanshim import FanShim
 
 parser = argparse.ArgumentParser()
@@ -47,15 +47,14 @@ def update_led_temperature(temp):
 
 
 def get_cpu_temp():
-    t = psutil.sensors_temperatures()
-    for x in ['cpu-thermal', 'cpu_thermal']:
-        if x in t:
-            temp_file = open("/dev/shm/cputemp", 'w')
-            pft = t[x][0].current // 0.1 / 10
-            temp_file.write(str(pft))
-            return t[x][0].current
-    print("Warning: Unable to get CPU temperature!")
-    return 0
+    process = subprocess.run(['/opt/vc/bin/vcgencmd', 'measure_temp'], check=True, stdout=subprocess.PIPE,universal_newlines=True)
+    output = process.stdout.strip().split('=')
+    npft = output[1].split("'")[0]
+    pft = npft.split('.')[0]
+    temp_file = open("/dev/shm/cputemp", 'w')
+    temp_file.write(str(pft))
+    temp_file.close()
+    return pft
 
 
 def get_cpu_freq():
