@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 freq = '14.235.000'
-freq = freq.replace('.', '')
+freq = int(freq.replace('.', ''))
 
 
 def define_freq(freq):
