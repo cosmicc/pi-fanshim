@@ -133,7 +133,7 @@ while True:
         tz_file = open("/etc/timezone", 'r')
         ctz = tz_file.read().strip('\n')
         tz_file.close()
-        if ctz != ntz && ntz is not None:
+        if ctz != ntz and ntz is not None:
             print(f'Timezone changed from {ctz} to {ntz}')
             subprocess.run(['timedatectl', 'set-timezone', ntz])
         sleep(30)
