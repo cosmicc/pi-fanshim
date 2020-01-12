@@ -4,6 +4,7 @@ import subprocess
 from time import sleep
 import urllib.request
 from pathlib import Path
+from loguru import logger as log
 
 import gpsdshm
 import maidenhead as mh
@@ -65,6 +66,7 @@ def remap(x, oMin, oMax, nMin, nMax):
 
 
 def throttle_check():
+    log.debug('Running Throttle_check()...')
     scale = 16
     num_of_bits = 19
     result = subprocess.run(['vcgencmd', 'get_throttled'], stdout=subprocess.PIPE)
@@ -98,12 +100,14 @@ def throttle_check():
     else:
         undervolt_now = False
 
+    log.debug('Writing throttle file')
     fan_file = open("/dev/shm/throttle", 'w')
     fan_file.write(f'undervolt_now={undervolt_now}\nundervolt_hist={undervolt_hist}\nthrottle_now={throttle_now}\nthrottle_hist={throttle_hist}\ncpucap_now={cap_now}\ncpucap_hist={cap_hist}\n')
     fan_file.close()
 
 
 def netcheck():
+    log.debug('Runnning Netcheck()...')
     child = subprocess.Popen(['iwconfig'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=False)
     streamdata = child.communicate()[0].decode('UTF-8').split('\n')
     if child.returncode == 0:
@@ -136,6 +140,7 @@ def netcheck():
         else:
             internet = "False"
         try:
+            log.debug('Writing network file')
             inet_file = open(str(net_file), 'w')
             inet_file.write(f'internet={internet}\nssid={ssid}\napmac={apmac}\nband={band}\nchannel={channel}\ndbm={signal}\nsignal_percent={signal_percent}\nquality={linkqual}\nbitrate={bitrate}\n')
             inet_file.close()
@@ -146,6 +151,7 @@ def netcheck():
 while True:
     netcheck()
     throttle_check()
+    log.debug('Getting Gps info...')
     try:
         lat = gpsd_shm.fix.latitude
     except:
@@ -166,6 +172,7 @@ while True:
     if lat is not None and lon is not None:
         mhead = mh.toMaiden(lat, lon, precision=4)
         # print(f'lat: {lat}, lon: {lon}, maiden: {mhead}, {tz.tzNameAt(lat, lon)}')
+        log.debug('Writing GPS file')
         fan_file = open("/dev/shm/gps", 'w')
         ntz = tz.tzNameAt(lat, lon)
         fan_file.write(f'lat={trunc(lat, 6)}\nlon={trunc(lon, 6)}\nmaiden={mhead}\ntimezone={ntz}\nfix={fixmode}\ntimesource={get_pps()}\n')
@@ -181,6 +188,7 @@ while True:
         tz_file = open("/etc/timezone", 'r')
         ctz = tz_file.read().strip('\n')
         tz_file.close()
+        log.debug('Writing GPS file')
         fan_file = open("/dev/shm/gps", 'w')
         fan_file.write(f'lat=0\nlon=0\nmaiden="N/A"\ntimezone={ctz}\nfix={fixmode}\ntimesource={get_pps()}\n')
         fan_file.close()
