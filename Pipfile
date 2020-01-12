@@ -9,6 +9,8 @@ plasmalights = "*"
 psutil = "*"
 maidenhead = "*"
 shapely = "*"
+gpsdshm = "*"
+tzwhere = "*"
 
 [dev-packages]
 

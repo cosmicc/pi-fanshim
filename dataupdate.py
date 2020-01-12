@@ -10,10 +10,21 @@ import gpsdshm
 import maidenhead as mh
 from tzwhere import tzwhere
 
-gpsd_shm = gpsdshm.Shm()
-tz = tzwhere.tzwhere()
-net_file = Path('/dev/shm/network')
+log.remove() # Comment out for log
 
+log.debug('Establishing GPSD connection')
+try:
+    gpsd_shm = gpsdshm.Shm()
+except:
+    log.exception('Failed GPSD connection')
+    exit(1)
+else:
+    log.debug('GPSD connection established')
+
+log.debug('Importing timezone offline database')
+tz = tzwhere.tzwhere()
+log.debug('Timezone Database loaded')
+net_file = Path('/dev/shm/network')
 
 def trunc(f_number, n_decimals):
     strFormNum = "{0:." + str(n_decimals + 5) + "f}"
@@ -22,6 +33,7 @@ def trunc(f_number, n_decimals):
 
 
 def get_pps():
+    log.debug('Getting NTP Data...')
     process = subprocess.run(['ntpq', '-p'], check=True, stdout=subprocess.PIPE, universal_newlines=True)
     output = process.stdout.split('\n')
     for line in output:
@@ -32,6 +44,7 @@ def get_pps():
 
 
 def connect(host='http://google.com'):
+    log.debug('Testing Internet connection')
     try:
         urllib.request.urlopen(host)
         return True
@@ -149,6 +162,7 @@ def netcheck():
 
 
 while True:
+    log.debug('Starting main loop')
     netcheck()
     throttle_check()
     log.debug('Getting Gps info...')
@@ -183,7 +197,8 @@ while True:
         if ctz != ntz and ntz is not None:
             print(f'Timezone changed from {ctz} to {ntz}')
             subprocess.run(['timedatectl', 'set-timezone', ntz])
-        sleep(30)
+        log.debug('Sleeping 10s')
+        sleep(10)
     else:
         tz_file = open("/etc/timezone", 'r')
         ctz = tz_file.read().strip('\n')
@@ -192,4 +207,5 @@ while True:
         fan_file = open("/dev/shm/gps", 'w')
         fan_file.write(f'lat=0\nlon=0\nmaiden="N/A"\ntimezone={ctz}\nfix={fixmode}\ntimesource={get_pps()}\n')
         fan_file.close()
+        log.debug('Sleeping 10s')
         sleep(10)
