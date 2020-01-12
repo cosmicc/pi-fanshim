@@ -1,6 +1,0 @@
-/opt/anaconda/anaconda_lib/autopep/../linting/pycodestyle.py:113: FutureWarning: Possible nested set at position 1
-  EXTRANEOUS_WHITESPACE_REGEX = re.compile(r'[[({] | []}),;:]')
-MyPy is enabled but we could not import it
-Usage: minserver.py -p <project> -e <extra_paths> port
-
-minserver.py: error: you have to pass a port number
