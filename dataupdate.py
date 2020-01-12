@@ -100,6 +100,7 @@ def throttle_check():
 
     fan_file = open("/dev/shm/throttle", 'w')
     fan_file.write(f'undervolt_now={undervolt_now}\nundervolt_hist={undervolt_hist}\nthrottle_now={throttle_now}\nthrottle_hist={throttle_hist}\ncpucap_now={cap_now}\ncpucap_hist={cap_hist}\n')
+    fan_file.close()
 
 
 def netcheck():
